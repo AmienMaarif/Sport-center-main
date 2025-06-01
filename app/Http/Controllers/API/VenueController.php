@@ -122,7 +122,7 @@ class VenueController extends Controller
         
         $venue->update([
             'isDeleted' => 1,
-            'LastUpdatedBy' => auth()->id(),
+            'LastUpdatedBy' => auth()->id,
             'LastUpdatedDate' => now()
         ]);
 

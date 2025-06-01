@@ -11,34 +11,51 @@ class Venue extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-    
+    // Aktifkan created_at dan updated_at
+    public $timestamps = true;
+
+    // Field yang boleh diisi
     protected $fillable = [
         'name',
         'type',
         'location',
+        'image',
         'price',
         'image_url',
-        'facilities'
+        'facilities',
+        'created_by',
+        'updated_by'
     ];
 
+    // Cast tipe data
     protected $casts = [
         'facilities' => 'array',
         'price' => 'decimal:2'
     ];
 
+    // Relasi ke kategori (jika digunakan)
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
+    // Relasi ke transaksi
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function bookings()
+    // Relasi ke booking
+    public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    // Isi otomatis created_by
+    protected static function booted()
+    {
+        static::creating(function ($venue) {
+            $venue->created_by = 'admin';
+        });
     }
 }

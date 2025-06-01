@@ -29,7 +29,7 @@ class BookingController extends Controller
 
         $booking = Booking::create([
             ...$validated,
-            'user_id' => auth()->id()
+            'user_id' => auth()->id
         ]);
 
         return response()->json([

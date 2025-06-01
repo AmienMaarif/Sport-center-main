@@ -5,6 +5,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\VenueController;
 use App\Http\Controllers\API\BookingController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TransactionController;
 
 // Public routes
 Route::post('login', [AuthController::class, 'login']);
@@ -27,4 +28,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('bookings/{id}', [BookingController::class, 'show']);
     Route::put('bookings/{id}', [BookingController::class, 'update']);
     Route::delete('bookings/{id}', [BookingController::class, 'destroy']);
+    Route::post('/booking/midtrans', [TransactionController::class, 'createMidtrans']);
 }); 

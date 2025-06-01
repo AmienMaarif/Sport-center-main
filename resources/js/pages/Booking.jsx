@@ -1,68 +1,61 @@
 import React, { useState } from 'react';
-import { usePage } from '@inertiajs/react';
 import { Inertia } from '@inertiajs/inertia';
-import MainLayout from '@/components/MainLayout';
+import MainLayout from '@/components/MainLayout'; // sesuaikan dengan layout kamu
+import { usePage } from '@inertiajs/react';
 
 export default function Booking() {
-  const { venue, selectedDate, selectedTimes } = usePage().props;
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [searchCode, setSearchCode] = useState('');
+  const { booking } = usePage().props; // data dari backend (jika ada)
 
-  const totalPrice = venue.price * selectedTimes.length;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    Inertia.post('/booking', {
-      venue_id: venue.id,
-      name,
-      phone,
-      date: selectedDate,
-      time_slots: selectedTimes,
-      total_price: totalPrice,
-    });
+  const handleSearch = () => {
+    if (!searchCode) return;
+    Inertia.visit(`/booking?code=${searchCode}`);
   };
 
   return (
     <MainLayout>
-      <div className="max-w-xl mx-auto px-4 py-10">
-        <h1 className="text-2xl font-bold mb-6">Form Booking</h1>
+      <div className="max-w-xl mx-auto py-10 px-4 text-center">
+        <h1 className="text-2xl font-bold mb-4">Cek Status Booking</h1>
 
-        <div className="mb-6 space-y-2 text-sm text-gray-700">
-          <p><strong>Venue:</strong> {venue.name}</p>
-          <p><strong>Tanggal:</strong> {selectedDate}</p>
-          <p><strong>Jam:</strong> {selectedTimes.join(', ')}</p>
-          <p><strong>Total Harga:</strong> Rp. {totalPrice.toLocaleString('id-ID')}</p>
+        {/* Form Pencarian */}
+        <div className="flex mb-6">
+          <input
+            type="text"
+            placeholder="Masukkan Kode Booking Anda"
+            value={searchCode}
+            onChange={(e) => setSearchCode(e.target.value)}
+            className="flex-1 border rounded px-4 py-2"
+          />
+          <button
+            onClick={handleSearch}
+            className="ml-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            Cari
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-medium mb-1">Nama Lengkap</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+        {/* Jika ditemukan */}
+        {booking ? (
+          <div className="bg-white shadow-md p-4 rounded border">
+            <h2 className="text-lg font-semibold mb-2">Detail Booking</h2>
+            <p><strong>Kode Booking:</strong> {booking.code}</p>
+            <p><strong>Nama:</strong> {booking.customer_name}</p>
+            <p><strong>Venue:</strong> {booking.venue_name}</p>
+            <p><strong>Tanggal:</strong> {booking.date}</p>
+            <p><strong>Jam:</strong> {booking.time}</p>
+            <p><strong>Status:</strong> <span className={`font-bold ${booking.status === 'lunas' ? 'text-green-600' : 'text-yellow-600'}`}>{booking.status}</span></p>
+
+            {booking.status === 'lunas' && (
+              <div className="mt-4">
+                <a href={`/download-tiket/${booking.code}`} className="text-blue-500 underline">
+                  Unduh Tiket (PDF)
+                </a>
+              </div>
+            )}
           </div>
-          <div>
-            <label className="block font-medium mb-1">Nomor HP</label>
-            <input
-              type="tel"
-              className="w-full border rounded px-3 py-2"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded"
-          >
-            Konfirmasi Booking
-          </button>
-        </form>
+        ) : (
+          <p className="text-gray-500 italic">Silakan masukkan kode booking untuk melihat status.</p>
+        )}
       </div>
     </MainLayout>
   );

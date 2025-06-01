@@ -98,7 +98,7 @@ class CategoryController extends Controller
         
         $category->update([
             'isDeleted' => 1,
-            'LastUpdatedBy' => auth()->id(),
+            'LastUpdatedBy' => auth()->id,
             'LastUpdatedDate' => now()
         ]);
 
